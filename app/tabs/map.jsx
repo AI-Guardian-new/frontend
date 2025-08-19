@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { SafeAreaView } from 'react-native';
+import KakaoMap from "../components/KakaoMap"; // components 폴더 기준
+import KakaoMapWeb from '../components/KakaoMapWeb'; // components 폴더 기준
 import {
   View,
   Text,
@@ -8,6 +11,33 @@ import {
 } from "react-native";
 
 export default function ShelterScreen() {
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KEY&libraries=services"></script>
+      <style>
+        body, html { margin:0; padding:0; height:100%; }
+        #map { width:100%; height:100%; }
+      </style>
+    </head>
+    <body>
+      <div id="map"></div>
+
+      <script>
+        console.log('Kakao Map script 실행됨'); // 여기에 확인용 로그
+        const mapContainer = document.getElementById('map');
+        const mapOption = { center: new kakao.maps.LatLng(37.5665, 126.9780), level: 3 };
+        const map = new kakao.maps.Map(mapContainer, mapOption);
+        const marker = new kakao.maps.Marker({ position: new kakao.maps.LatLng(37.5665, 126.9780) });
+        marker.setMap(map);
+      </script>
+    </body>
+    </html>
+  `;
+
   const [shelters] = useState([
     {
       name: "서울시청 긴급대피소",
@@ -36,8 +66,16 @@ export default function ShelterScreen() {
     <View style={styles.container}>
       {/* 지도 영역 */}
       <View style={styles.mapBox}>
-        <Text style={{ color: "#6b7280" }}>지도 로딩 중…</Text>
-        <Text style={{ color: "#6b7280" }}>Google Maps API 연동 필요</Text>
+        <SafeAreaView style={styles.container}>
+          {/* 서울 중심 좌표 예시 */}
+          {/* <KakaoMap latitude={37.5665} longitude={126.9780} /> */}
+          {/* <KakaoMapWeb latitude={37.5665} longitude={126.9780} /> */}
+          <iframe
+            srcDoc={htmlContent}
+            style={{ width: '100%', height: '300px', border: 'none' }}
+            title="KakaoMap"
+          />
+        </SafeAreaView>
       </View>
 
       {/* 대피소 리스트 */}
@@ -78,7 +116,6 @@ export default function ShelterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9fafb" },
   mapBox: {
     height: 150,
     backgroundColor: "#f3f4f6",
@@ -135,4 +172,11 @@ const styles = StyleSheet.create({
   },
   navItem: { color: "#6b7280", fontSize: 13 },
   active: { color: "#2563eb", fontWeight: "600" },
+  container: { 
+    height: 300,
+    width: "100%",
+    backgroundColor: "#f9fafb",
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

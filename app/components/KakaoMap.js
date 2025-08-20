@@ -17,7 +17,6 @@ export default function KakaoMap({ latitude, longitude }) {
       </head>
       <body>
         <div id="map"></div>
-        <p> 안녕하십니까??</p>
         <script>
           window.onload = function() {
             if (typeof kakao !== 'undefined' && kakao.maps) {

@@ -42,7 +42,7 @@ export default function ShelterScreen() {
 
       {/* 대피소 리스트 */}
       <ScrollView style={{ flex: 1, padding: 16 }}>
-        <Text style={styles.sectionTitle}>📍 주변 대피소 (3곳)</Text>
+        <Text style={styles.sectionTitle}>📍 주변 대피소</Text>
 
         {shelters.map((s, idx) => (
           <View key={idx} style={styles.card}>
@@ -65,14 +65,6 @@ export default function ShelterScreen() {
           </View>
         ))}
       </ScrollView>
-
-      {/* 하단 네비게이션 */}
-      <View style={styles.navbar}>
-        <Text style={styles.navItem}>🏠 홈</Text>
-        <Text style={[styles.navItem, styles.active]}>🗺️ 지도</Text>
-        <Text style={styles.navItem}>⚠️ 재난정보</Text>
-        <Text style={styles.navItem}>⚙️ 설정</Text>
-      </View>
     </View>
   );
 }

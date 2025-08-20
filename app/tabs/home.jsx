@@ -1,8 +1,17 @@
-import { View, Text, TouchableOpacity, StyleSheet, Platform, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from "react-native";
+import { useState } from "react";
+import * as Linking from "expo-linking"; // Expo 환경이라면 expo-linking, 일반 RN은 import { Linking } from "react-native"
 
 const baseFont = Platform.select({ ios: "System", android: "sans-serif", web: "system-ui" });
 
 export default function Home() {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const callNumber = (number) => {
+    Linking.openURL(`tel:${number}`);
+    setModalVisible(false);
+  };
+
   return (
     <View style={s.container}>
       {/* 헤더 */}
@@ -11,135 +20,103 @@ export default function Home() {
         <Text style={s.status}>📍 위치 활성화 · ✅ 안전</Text>
       </View>
 
-      {/* 현재 지역 / 상황 */}
-      <View style={s.card}>
+      {/* 현재 지역 / 날씨 카드 (크게) */}
+      <View style={[s.card, s.weatherCard]}>
         <Text style={s.location}>서울특별시 강남구</Text>
-        <Text style={s.subText}>태풍 경보 발령 중</Text>
+        <Text style={s.subText}>☁️ 현재 날씨: 흐림 · 27℃</Text>
       </View>
 
-      {/* 긴급 신고 버튼 */}
-      <TouchableOpacity style={s.sosBtn} onPress={() => {}}>
+      {/* 긴급 신고 버튼 (조금 줄임) */}
+      <TouchableOpacity style={s.sosBtn} onPress={() => setModalVisible(true)}>
         <Text style={s.sosText}>🚨 긴급 신고 (SOS)</Text>
       </TouchableOpacity>
 
-      {/* 나는 안전합니다 버튼 */}
-      <TouchableOpacity style={s.safeBtn} onPress={() => {}}>
-        <Text style={s.safeText}>✅ 나는 안전합니다</Text>
-      </TouchableOpacity>
+      {/* 긴급 신고 Modal */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={s.modalOverlay}>
+          <View style={s.modalBox}>
+            <Text style={s.modalTitle}>📞 신고 전화 연결</Text>
+
+            <TouchableOpacity style={s.callBtn} onPress={() => callNumber("119")}>
+              <Text style={s.callText}>119 (긴급)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={s.callBtn} onPress={() => callNumber("112")}>
+              <Text style={s.callText}>112 (긴급)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={s.callBtn} onPress={() => callNumber("110")}>
+              <Text style={s.callText}>110 (비긴급)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={s.callBtn} onPress={() => callNumber("15883650")}>
+              <Text style={s.callText}>1588-3650 (재난)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={s.closeBtn} onPress={() => setModalVisible(false)}>
+              <Text style={s.closeText}>닫기</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* 기능 버튼 2개 */}
       <View style={s.row}>
         <TouchableOpacity style={s.subBtn} onPress={() => {}}>
-          <Text style={s.subText}>📍 대피소 찾기</Text>
+          <Text style={s.subTextBig}>📍 대피소 찾기</Text>
         </TouchableOpacity>
         <TouchableOpacity style={s.subBtn} onPress={() => {}}>
-          <Text style={s.subText}>👨‍👩‍👧 보호자 연락</Text>
+          <Text style={s.subTextBig}>👨‍👩‍👧 보호자 연락</Text>
         </TouchableOpacity>
-      </View>
-
-      {/* 최근 재난 알림 (화면 아래 전부 차지) */}
-      <View style={[s.card, s.alertBox]}>
-        <Text style={s.sectionTitle}>🔔 최근 재난 알림</Text>
-        <ScrollView>
-          <Text style={s.alert}>태풍 ‘하이선’ 경보 · 2시간 전 · 진행중</Text>
-          <Text style={s.alert}>지진 감지 알림 · 완료</Text>
-          <Text style={s.alert}>홍수주의보 · 1일 전 · 해제</Text>
-          {/* 추후 알림이 늘어나면 자동 스크롤 */}
-        </ScrollView>
       </View>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f9f9f9",
-    padding: 16,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-    alignItems: "center",
-  },
-  logo: {
-    fontSize: 20,
-    fontWeight: "700",
-    fontFamily: baseFont,
-  },
-  status: {
-    fontSize: 14,
-    color: "green",
-    fontFamily: baseFont,
-  },
-  card: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 16,
-  },
-  location: {
-    fontSize: 18,
-    fontWeight: "600",
-    fontFamily: baseFont,
-  },
-  subText: {
-    fontSize: 14,
-    color: "#555",
-    fontFamily: baseFont,
-  },
+  container: { flex: 1, backgroundColor: "#f9f9f9", padding: 16 },
+  header: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20, alignItems: "center" },
+  logo: { fontSize: 20, fontWeight: "700", fontFamily: baseFont },
+  status: { fontSize: 14, color: "green", fontFamily: baseFont },
+
+  card: { backgroundColor: "#fff", padding: 24, borderRadius: 12, marginBottom: 20 },
+  weatherCard: { flex: 1.6, alignItems: "center", justifyContent: "center" }, // ⬅️ 날씨 카드 크게
+
+  location: { fontSize: 22, fontWeight: "700", fontFamily: baseFont, marginBottom: 8 },
+  subText: { fontSize: 16, color: "#555", fontFamily: baseFont },
+
   sosBtn: {
     backgroundColor: "#d32f2f",
-    paddingVertical: 20,
-    borderRadius: 10,
-    marginBottom: 12,
+    flex: 0.6, // ⬅️ 긴급 신고 버튼 줄임
+    borderRadius: 14,
+    marginBottom: 20,
     alignItems: "center",
+    justifyContent: "center",
   },
-  sosText: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "700",
-    fontFamily: baseFont,
-  },
-  safeBtn: {
-    backgroundColor: "green",
-    paddingVertical: 18,
-    borderRadius: 10,
-    marginBottom: 12,
-    alignItems: "center",
-  },
-  safeText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-    fontFamily: baseFont,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
+  sosText: { color: "#fff", fontSize: 22, fontWeight: "700", fontFamily: baseFont },
+
+  row: { flexDirection: "row", justifyContent: "space-between", flex: 1 },
   subBtn: {
     backgroundColor: "#eee",
     flex: 1,
-    paddingVertical: 16,
-    borderRadius: 10,
+    marginHorizontal: 6,
+    borderRadius: 14,
     alignItems: "center",
-    marginHorizontal: 4,
+    justifyContent: "center",
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 8,
-    fontFamily: baseFont,
-  },
-  alertBox: {
-    flex: 1, // 화면의 남는 공간 전부 차지
-  },
-  alert: {
-    fontSize: 14,
-    marginBottom: 6,
-    fontFamily: baseFont,
-  },
+  subTextBig: { fontSize: 18, fontWeight: "700", fontFamily: baseFont },
+
+  // Modal 스타일
+  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", alignItems: "center" },
+  modalBox: { width: "80%", backgroundColor: "#fff", borderRadius: 12, padding: 20, alignItems: "center" },
+  modalTitle: { fontSize: 20, fontWeight: "600", marginBottom: 16 },
+  callBtn: { backgroundColor: "#eee", width: "100%", padding: 14, borderRadius: 8, alignItems: "center", marginBottom: 10 },
+  callText: { fontSize: 17, fontWeight: "500" }, // ⬅️ 글씨 얇게
+  closeBtn: { marginTop: 10 },
+  closeText: { fontSize: 16, color: "red", fontWeight: "500" },
 });

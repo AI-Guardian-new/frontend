@@ -5,41 +5,83 @@ import { useRouter } from "expo-router";
 const baseFont = Platform.select({ ios: "System", android: "sans-serif", web: "system-ui" });
 
 export default function GuardianForm() {
-  const [guardian1, setGuardian1] = useState("");
-  const [guardian2, setGuardian2] = useState("");
-  const [guardian3, setGuardian3] = useState("");
+  const [guardian1, setGuardian1] = useState({ name: "", phone: "" });
+  const [guardian2, setGuardian2] = useState({ name: "", phone: "" });
+  const [guardian3, setGuardian3] = useState({ name: "", phone: "" });
   const router = useRouter();
 
   return (
     <View style={s.container}>
       {/* 제목 */}
-      <Text style={s.title}>보호자 연락처 입력</Text>
+      <Text style={s.title}>👨‍👩‍👧 보호자 정보 입력</Text>
 
-      {/* 입력칸 3개 */}
-      <TextInput
-        style={s.input}
-        placeholder="보호자 1 연락처"
-        keyboardType="phone-pad"
-        value={guardian1}
-        onChangeText={setGuardian1}
-      />
-      <TextInput
-        style={s.input}
-        placeholder="보호자 2 연락처"
-        keyboardType="phone-pad"
-        value={guardian2}
-        onChangeText={setGuardian2}
-      />
-      <TextInput
-        style={s.input}
-        placeholder="보호자 3 연락처"
-        keyboardType="phone-pad"
-        value={guardian3}
-        onChangeText={setGuardian3}
-      />
+      {/* 보호자 1 */}
+      <View style={s.card}>
+        <Text style={s.cardTitle}>보호자 1</Text>
+        <View style={s.row}>
+          <TextInput
+            style={[s.input, s.nameInput]}
+            placeholder="이름"
+            value={guardian1.name}
+            onChangeText={(text) => setGuardian1({ ...guardian1, name: text })}
+          />
+          <TextInput
+            style={[s.input, s.phoneInput]}
+            placeholder="연락처"
+            keyboardType="phone-pad"
+            value={guardian1.phone}
+            onChangeText={(text) => setGuardian1({ ...guardian1, phone: text })}
+          />
+        </View>
+      </View>
 
-      {/* 저장 버튼 (화면 맨 밑 꽉 차게) */}
-      <TouchableOpacity style={s.btn} onPress={() => router.push("/forms/addressInfo")}>
+      {/* 보호자 2 */}
+      <View style={s.card}>
+        <Text style={s.cardTitle}>보호자 2</Text>
+        <View style={s.row}>
+          <TextInput
+            style={[s.input, s.nameInput]}
+            placeholder="이름"
+            value={guardian2.name}
+            onChangeText={(text) => setGuardian2({ ...guardian2, name: text })}
+          />
+          <TextInput
+            style={[s.input, s.phoneInput]}
+            placeholder="연락처"
+            keyboardType="phone-pad"
+            value={guardian2.phone}
+            onChangeText={(text) => setGuardian2({ ...guardian2, phone: text })}
+          />
+        </View>
+      </View>
+
+      {/* 보호자 3 */}
+      <View style={s.card}>
+        <Text style={s.cardTitle}>보호자 3</Text>
+        <View style={s.row}>
+          <TextInput
+            style={[s.input, s.nameInput]}
+            placeholder="이름"
+            value={guardian3.name}
+            onChangeText={(text) => setGuardian3({ ...guardian3, name: text })}
+          />
+          <TextInput
+            style={[s.input, s.phoneInput]}
+            placeholder="연락처"
+            keyboardType="phone-pad"
+            value={guardian3.phone}
+            onChangeText={(text) => setGuardian3({ ...guardian3, phone: text })}
+          />
+        </View>
+      </View>
+
+      {/* 저장 버튼 */}
+      <TouchableOpacity
+        style={s.btn}
+        onPress={() => {
+          router.push("/forms/addressInfo"); // 다음 페이지 경로 확인 필요
+        }}
+      >
         <Text style={s.btnText}>저장하기</Text>
       </TouchableOpacity>
     </View>
@@ -54,28 +96,51 @@ const s = StyleSheet.create({
   },
   title: {
     fontFamily: baseFont,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "700",
     textAlign: "center",
-    marginTop: 40,
-    marginBottom: 30,
+    marginTop: 30,
+    marginBottom: 20,
+  },
+  card: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 20,
+    backgroundColor: "#f9f9f9",
+  },
+  cardTitle: {
+    fontFamily: baseFont,
+    fontSize: 15,
+    fontWeight: "600",
+    marginBottom: 10,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    width: "100%",
-    padding: 12,
-    fontSize: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    fontSize: 13,
     fontFamily: baseFont,
-    marginBottom: 15,
+  },
+  nameInput: {
+    width: 80, // 이름 칸 좁게 고정
+    marginRight: 8,
+  },
+  phoneInput: {
+    flex: 1, // 연락처는 남은 공간 전부 차지
   },
   btn: {
     backgroundColor: "#000",
-    paddingVertical: 18,
-    borderRadius: 0,
+    paddingVertical: 16,
     width: "100%",
-    position: "absolute", // 화면 맨 밑
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
@@ -84,7 +149,7 @@ const s = StyleSheet.create({
   btnText: {
     fontFamily: baseFont,
     color: "#fff",
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "700",
   },
 });

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Platform, Alert } from "react-native";
-import * as Location from "expo-location";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from "react-native";
 import { useRouter } from "expo-router";
 
 const baseFont = Platform.select({ ios: "System", android: "sans-serif", web: "system-ui" });
@@ -9,50 +8,36 @@ export default function AddressForm() {
   const [address, setAddress] = useState("");
   const router = useRouter();
 
-  const getLocation = async () => {
-    try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("권한 필요", "위치 접근 권한이 필요합니다.");
-        return;
-      }
-
-      // GPS 좌표 가져오기
-      let location = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = location.coords;
-
-      // 좌표 → 상세 주소 변환
-      let [geo] = await Location.reverseGeocodeAsync({ latitude, longitude });
-
-      if (geo) {
-        const fullAddress = `${geo.country || ""} ${geo.region || ""} ${geo.city || ""} ${geo.district || ""} ${geo.street || ""} ${geo.streetNumber || ""} ${geo.postalCode || ""}`;
-        setAddress(fullAddress.trim());
-      }
-    } catch (err) {
-      console.error(err);
-      Alert.alert("오류", "현재 위치를 가져올 수 없습니다.");
-    }
+  // 더미 위치 가져오기
+  const getDummyLocation = () => {
+    const dummy = "서울특별시 강남구 테헤란로 123";
+    setAddress(dummy);
   };
 
   return (
     <View style={s.container}>
+      {/* 상단 제목 */}
+      <Text style={s.title}>📍 주소 입력</Text>
+
       {/* 주소 입력칸 */}
       <TextInput
         style={s.input}
         placeholder="주소를 입력하세요"
-        placeholderTextColor="#999"
         value={address}
         onChangeText={setAddress}
       />
 
-      {/* 현재 위치 가져오기 */}
-      <TouchableOpacity style={s.subBtn} onPress={getLocation}>
-        <Text style={s.subBtnText}>현재 위치 가져오기</Text>
+      {/* 현재 위치 가져오기 (더미데이터) */}
+      <TouchableOpacity style={s.btnSecondary} onPress={getDummyLocation}>
+        <Text style={s.btnSecondaryText}>현재 위치 가져오기</Text>
       </TouchableOpacity>
 
-      {/* 저장하기 (맨 밑 꽉 차게) */}
-      <TouchableOpacity style={s.saveBtn} onPress={() => router.push('/forms/mainboard')}>
-        <Text style={s.saveText}>저장하기</Text>
+      {/* 입력하기 버튼 */}
+      <TouchableOpacity
+        style={s.btnPrimary}
+        onPress={() => router.push("/forms/mainboard")}
+      >
+        <Text style={s.btnPrimaryText}>입력하기</Text>
       </TouchableOpacity>
     </View>
   );
@@ -63,6 +48,15 @@ const s = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#fff",
+    justifyContent: "flex-start",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
+    fontFamily: baseFont,
+    textAlign: "center",
+    marginTop: 40,
+    marginBottom: 30,
   },
   input: {
     borderWidth: 1,
@@ -71,24 +65,24 @@ const s = StyleSheet.create({
     width: "100%",
     padding: 12,
     fontSize: 16,
-    marginTop: 40,
-    marginBottom: 15,
+    marginBottom: 20,
+    fontFamily: baseFont,
   },
-  subBtn: {
+  btnSecondary: {
     borderWidth: 1,
     borderColor: "#000",
     borderRadius: 8,
     paddingVertical: 14,
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 15,
   },
-  subBtnText: {
+  btnSecondaryText: {
     fontSize: 16,
     color: "#000",
     fontFamily: baseFont,
     fontWeight: "600",
   },
-  saveBtn: {
+  btnPrimary: {
     backgroundColor: "#000",
     paddingVertical: 18,
     borderRadius: 0,
@@ -99,7 +93,7 @@ const s = StyleSheet.create({
     right: 0,
     alignItems: "center",
   },
-  saveText: {
+  btnPrimaryText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "700",
